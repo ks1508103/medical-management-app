@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Medical Shop Digital Notebook</title>
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #f1f5f9;
+      color: #1e293b;
+      padding: 12px;
+      padding-bottom: 60px;
+    }
+
+    header {
+      background: #0f172a;
+      color: white;
+      padding: 14px 16px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.1rem;
+    }
+
+    /* KPI Cards */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .kpi-box {
+      background: #ffffff;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      text-align: center;
+    }
+
+    .kpi-box span {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .kpi-box strong {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    /* Status Message Box */
+    #statusAlert {
+      display: none;
+      background: #0f172a;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      font-size: 0.85rem;
+      border-left: 4px solid #0284c7;
+    }
+
+    /* Cards */
+    .card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .card h2 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 4px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background: #ffffff;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: #0284c7;
+    }
+
+    button {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-blue {
+      background: #0284c7;
+      color: #ffffff;
+      width: 100%;
+    }
+
+    .btn-green {
+      background: #10b981;
+      color: #ffffff;
+      width: 100%;
+    }
+
+    .btn-clear {
+      background: #fee2e2;
+      color: #ef4444;
+      padding: 4px 8px;
+      font-size: 0.72rem;
+    }
+
+    /* POS Row */
+    .pos-flex {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .pos-flex div:first-child { flex: 2; }
+    .pos-flex div:nth-child(2) { flex: 1; }
+    .pos-flex button { flex: 1; height: 42px; }
+
+    /* Tables */
+    .table-box {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    th {
+      background: #f8fafc;
+      padding: 8px 10px;
+      text-align: left;
+      font-size: 0.7rem;
+      color: #64748b;
+      text-transform: uppercase;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+
+    .badge-ok {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .badge-low {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    /* Receipt Box */
+    .total-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      margin-top: 10px;
+      border-top: 1px dashed #cbd5e1;
+    }
+
+    .total-banner strong {
+      font-size: 1.2rem;
+      color: #0284c7;
+    }
+
+    /* Simple Modal */
+    #billPopup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 999;
+      padding: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bill-paper {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header>
+    <h1>🏪 Medical Shop</h1>
+    <button id="btnResetAll" style="background:#334155; color:#fff; padding:6px 10px; font-size:0.75rem;">Reset</button>
+  </header>
+
+  <!-- 3 KPI Indicators -->
+  <div class="kpi-row">
+    <div class="kpi-box">
+      <span>Total Items</span>
+      <strong id="kpiItems">0</strong>
+    </div>
+    <div class="kpi-box">
+      <span>Low Stock (&lt;5)</span>
+      <strong id="kpiLow" style="color:#ef4444;">0</strong>
+    </div>
+    <div class="kpi-box">
+      <span>Total Units</span>
+      <strong id="kpiUnits" style="color:#0284c7;">0</strong>
+    </div>
+  </div>
+
+  <!-- Notification Banner -->
+  <div id="statusAlert"></div>
+
+  <!-- 1. Stock In / Add Medicine -->
+  <div class="card">
+    <h2>Add or Update Medicine</h2>
+    <div class="form-group">
+      <label>Medicine Name</label>
+      <input type="text" id="inName" placeholder="e.g. Paracetamol">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Price (₹)</label>
+        <input type="number" id="inPrice" placeholder="20.00" step="0.5">
+      </div>
+      <div class="form-group">
+        <label>Quantity</label>
+        <input type="number" id="inQty" placeholder="50">
+      </div>
+    </div>
+    <button class="btn-blue" id="btnAddStock">Save to Stock</button>
+  </div>
+
+  <!-- 2. Sell / Counter POS -->
+  <div class="card">
+    <h2>
+      Sell Medicine (Billing)
+      <button class="btn-clear" id="btnClearCart">Clear</button>
+    </h2>
+    <div class="pos-flex">
+      <div>
+        <label>Select Item</label>
+        <select id="selMed"></select>
+      </div>
+      <div>
+        <label>Qty</label>
+        <input type="number" id="buyQty" value="1" min="1">
+      </div>
+      <button class="btn-green" id="btnAddToCart">Add</button>
+    </div>
+
+    <div class="table-box">
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th style="text-align:center;">Qty</th>
+            <th style="text-align:right;">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody id="cartTable">
+          <tr><td colspan="3" style="text-align:center; color:#94a3b8;">Cart is empty</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="total-banner">
+      <span>Grand Total: <strong id="cartTotalText">₹0.00</strong></span>
+      <button class="btn-blue" id="btnOpenBill" style="width:auto; padding:8px 14px;" disabled>Generate Bill</button>
+    </div>
+  </div>
+
+  <!-- 3. Current Live Stock Table -->
+  <div class="card">
+    <h2>Current Stock Directory</h2>
+    <div class="table-box" style="max-height: 250px; overflow-y:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Medicine</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="stockTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Bill Modal Popup -->
+  <div id="billPopup">
+    <div class="bill-paper">
+      <h3 style="text-align:center; font-size:1.1rem; margin-bottom:4px;">MEDICAL INVOICE</h3>
+      <p style="text-align:center; font-size:0.75rem; color:#64748b; margin-bottom:12px;">Retail Cash Bill</p>
+      <div id="billDetails" style="border-top:1px solid #e2e8f0; border-bottom:1px solid #e2e8f0; padding:10px 0; margin-bottom:10px; font-size:0.85rem;"></div>
+      <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.1rem; margin-bottom:14px;">
+        <span>Total Paid:</span>
+        <span id="billGrandTotal" style="color:#0284c7;">₹0.00</span>
+      </div>
+      <button id="btnCloseBill" class="btn-blue" style="background:#0f172a;">Close</button>
+    </div>
+  </div>
+
+  <!-- Isolated, Fail-Safe JavaScript -->
+  <script>
+    // State Array (Pure in-memory execution - immune to Acode webview sandbox crashes)
+    var inventory = [
+      { name: "Paracetamol", price: 20.0, quantity: 50 },
+      { name: "Cetirizine", price: 15.0, quantity: 30 },
+      { name: "Amoxicillin", price: 50.0, quantity: 3 }
+    ];
+    var cart = [];
+
+    // Helper: Show brief alert message
+    function showMsg(text, isError) {
+      var box = document.getElementById("statusAlert");
+      box.textContent = text;
+      box.style.borderLeftColor = isError ? "#ef4444" : "#10b981";
+      box.style.display = "block";
+      setTimeout(function() {
+        box.style.display = "none";
+      }, 3000);
+    }
+
+    // Refresh KPI Numbers
+    function renderKPIs() {
+      document.getElementById("kpiItems").textContent = inventory.length;
+
+      var lowCount = 0;
+      var totalUnits = 0;
+      for (var i = 0; i < inventory.length; i++) {
+        var q = parseInt(inventory[i].quantity, 10);
+        totalUnits += q;
+        if (q < 5) lowCount++;
+      }
+      document.getElementById("kpiLow").textContent = lowCount;
+      document.getElementById("kpiUnits").textContent = totalUnits;
+    }
+
+    // Refresh Stock Table and Dropdown Selection
+    function renderStock() {
+      var tbody = document.getElementById("stockTable");
+      var sel = document.getElementById("selMed");
+      tbody.innerHTML = "";
+      sel.innerHTML = "";
+
+      for (var i = 0; i < inventory.length; i++) {
+        var item = inventory[i];
+        var isLow = item.quantity < 5;
+
+        // Build Table Row
+        var tr = document.createElement("tr");
+        tr.innerHTML = 
+          "<td>" + (i + 1) + "</td>" +
+          "<td><strong>" + item.name + "</strong></td>" +
+          "<td>₹" + item.price.toFixed(2) + "</td>" +
+          "<td><strong>" + item.quantity + "</strong></td>" +
+          "<td><span class='badge " + (isLow ? "badge-low" : "badge-ok") + "'>" + (isLow ? "Low (<5)" : "In Stock") + "</span></td>";
+        tbody.appendChild(tr);
+
+        // Build Dropdown Option (only if in stock)
+        if (item.quantity > 0) {
+          var opt = document.createElement("option");
+          opt.value = i;
+          opt.textContent = item.name + " (Stock: " + item.quantity + " | ₹" + item.price + ")";
+          sel.appendChild(opt);
+        }
+      }
+
+      renderKPIs();
+    }
+
+    // Refresh Billing Cart Table
+    function renderCart() {
+      var tbody = document.getElementById("cartTable");
+      var totalTxt = document.getElementById("cartTotalText");
+      var btnBill = document.getElementById("btnOpenBill");
+      tbody.innerHTML = "";
+
+      if (cart.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#94a3b8;'>Cart is empty</td></tr>";
+        totalTxt.textContent = "₹0.00";
+        btnBill.disabled = true;
+        return;
+      }
+
+      var total = 0;
+      for (var i = 0; i < cart.length; i++) {
+        var sub = cart[i].price * cart[i].qty;
+        total += sub;
+        var tr = document.createElement("tr");
+        tr.innerHTML = 
+          "<td>" + cart[i].name + "</td>" +
+          "<td style='text-align:center;'>" + cart[i].qty + "</td>" +
+          "<td style='text-align:right; font-weight:700;'>₹" + sub.toFixed(2) + "</td>";
+        tbody.appendChild(tr);
+      }
+
+      totalTxt.textContent = "₹" + total.toFixed(2);
+      btnBill.disabled = false;
+    }
+
+    // Action 1: Add or Update Stock Button Clicked
+    document.getElementById("btnAddStock").onclick = function() {
+      var nameEl = document.getElementById("inName");
+      var priceEl = document.getElementById("inPrice");
+      var qtyEl = document.getElementById("inQty");
+
+      var name = nameEl.value.trim();
+      var price = parseFloat(priceEl.value);
+      var qty = parseInt(qtyEl.value, 10);
+
+      if (!name) {
+        showMsg("Please enter medicine name.", true);
+        return;
+      }
+      if (isNaN(price) || price <= 0) {
+        showMsg("Enter a valid price (e.g. 20.00)", true);
+        return;
+      }
+      if (isNaN(qty) || qty <= 0) {
+        showMsg("Enter a valid quantity (min 1)", true);
+        return;
+      }
+
+      // Check existing item
+      var found = false;
+      for (var i = 0; i < inventory.length; i++) {
+        if (inventory[i].name.toLowerCase() === name.toLowerCase()) {
+          inventory[i].quantity += qty;
+          inventory[i].price = price;
+          found = true;
+          showMsg("Stock updated for " + inventory[i].name + "! New stock: " + inventory[i].quantity, false);
+          break;
+        }
+      }
+
+      if (!found) {
+        inventory.push({ name: name, price: price, quantity: qty });
+        showMsg("New medicine added: " + name, false);
+      }
+
+      // Clear input boxes
+      nameEl.value = "";
+      priceEl.value = "";
+      qtyEl.value = "";
+
+      renderStock();
+    };
+
+    // Action 2: Add to Cart Button Clicked
+    document.getElementById("btnAddToCart").onclick = function() {
+      var sel = document.getElementById("selMed");
+      if (!sel.value && sel.value !== 0) {
+        showMsg("Select an available medicine.", true);
+        return;
+      }
+
+      var index = parseInt(sel.value, 10);
+      var item = inventory[index];
+      var qtyInput = document.getElementById("buyQty");
+      var buyQty = parseInt(qtyInput.value, 10);
+
+      if (isNaN(buyQty) || buyQty <= 0) {
+        showMsg("Quantity must be at least 1.", true);
+        return;
+      }
+
+      if (buyQty > item.quantity) {
+        showMsg("Only " + item.quantity + " units available for " + item.name, true);
+        return;
+      }
+
+      // Deduct immediately from stock
+      item.quantity -= buyQty;
+
+      // Add to cart
+      var cartItem = null;
+      for (var i = 0; i < cart.length; i++) {
+        if (cart[i].name === item.name) {
+          cartItem = cart[i];
+          break;
+        }
+      }
+
+      if (cartItem) {
+        cartItem.qty += buyQty;
+      } else {
+        cart.push({ name: item.name, price: item.price, qty: buyQty });
+      }
+
+      qtyInput.value = "1";
+      showMsg("Added " + buyQty + "x " + item.name + " to cart", false);
+
+      renderStock();
+      renderCart();
+    };
+
+    // Action 3: Clear Cart (Restores Inventory)
+    document.getElementById("btnClearCart").onclick = function() {
+      if (cart.length === 0) return;
+      for (var i = 0; i < cart.length; i++) {
+        for (var j = 0; j < inventory.length; j++) {
+          if (inventory[j].name === cart[i].name) {
+            inventory[j].quantity += cart[i].qty;
+          }
+        }
+      }
+      cart = [];
+      showMsg("Cart cleared. Stock restored.", true);
+      renderStock();
+      renderCart();
+    };
+
+    // Action 4: Open Bill Modal
+    document.getElementById("btnOpenBill").onclick = function() {
+      if (cart.length === 0) return;
+      var billDiv = document.getElementById("billDetails");
+      billDiv.innerHTML = "";
+
+      var grandTotal = 0;
+      for (var i = 0; i < cart.length; i++) {
+        var sub = cart[i].price * cart[i].qty;
+        grandTotal += sub;
+        var row = document.createElement("div");
+        row.style.display = "flex";
+        row.style.justifyContent = "space-between";
+        row.style.marginBottom = "6px";
+        row.innerHTML = "<span>" + cart[i].name + " (x" + cart[i].qty + ")</span><strong>₹" + sub.toFixed(2) + "</strong>";
+        billDiv.appendChild(row);
+      }
+
+      document.getElementById("billGrandTotal").textContent = "₹" + grandTotal.toFixed(2);
+      document.getElementById("billPopup").style.display = "flex";
+
+      // Clear cart once billed
+      cart = [];
+      renderCart();
+    };
+
+    // Action 5: Close Bill Modal
+    document.getElementById("btnCloseBill").onclick = function() {
+      document.getElementById("billPopup").style.display = "none";
+    };
+
+    // Action 6: Reset Defaults
+    document.getElementById("btnResetAll").onclick = function() {
+      inventory = [
+        { name: "Paracetamol", price: 20.0, quantity: 50 },
+        { name: "Cetirizine", price: 15.0, quantity: 30 },
+        { name: "Amoxicillin", price: 50.0, quantity: 3 }
+      ];
+      cart = [];
+      renderStock();
+      renderCart();
+      showMsg("Stock reset to default.", false);
+    };
+
+    // Initial Execution
+    renderStock();
+    renderCart();
+  </script>
+</body>
+</html>
